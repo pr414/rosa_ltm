@@ -33,7 +33,7 @@ case "$(uname)" in
         if grep -q "WSL" /proc/version; then
             export DISPLAY=:0
         else
-            export DISPLAY=host.docker.internal:0
+            export DISPLAY=:1
         fi
         xhost +
         ;;
