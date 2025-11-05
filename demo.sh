@@ -33,7 +33,7 @@ case "$(uname)" in
         if grep -q "WSL" /proc/version; then
             export DISPLAY=:0
         else
-            export DISPLAY=:1
+            export DISPLAY=:0
         fi
         xhost +
         ;;
@@ -59,15 +59,60 @@ echo "Building the $CONTAINER_NAME Docker image..."
 docker build --build-arg DEVELOPMENT=$DEVELOPMENT -t $CONTAINER_NAME -f Dockerfile . || { echo "Error: Docker build failed"; exit 1; }
 
 echo "Running the Docker container..."
-docker run -it --rm --name $CONTAINER_NAME \
-    -e DISPLAY=$DISPLAY \
-    -e HEADLESS=$HEADLESS \
-    -e DEVELOPMENT=$DEVELOPMENT \
-    -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v "$PWD/src":/app/src \
-    -v "$PWD/tests":/app/tests \
-    --network host \
-    $CONTAINER_NAME
+
+# Pass correct graphics driver
+# Detect if NVIDIA runtime is available
+if command -v nvidia-smi &> /dev/null && docker info | grep -q "Runtimes:.*nvidia"; then
+    echo "Detected NVIDIA GPU — enabling NVIDIA Docker runtime"
+    GPU_FLAGS="--gpus all --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all"
+elif [ -d /dev/dri ]; then
+    echo "Detected /dev/dri — enabling generic GPU (Intel/AMD) passthrough"
+
+    # Try both common DRI library paths (depends on host distro)
+    if [ -d /usr/lib/x86_64-linux-gnu/dri ]; then
+        DRI_LIB_PATH="/usr/lib/x86_64-linux-gnu/dri"
+    elif [ -d /usr/lib/dri ]; then
+        DRI_LIB_PATH="/usr/lib/dri"
+    else
+        DRI_LIB_PATH=""
+        echo "Warning: could not find host DRI driver folder."
+    fi
+
+    GPU_FLAGS="--device /dev/dri:/dev/dri -v ${DRI_LIB_PATH}:${DRI_LIB_PATH}:ro"
+else
+    echo "No GPU detected — running with software rendering"
+    GPU_FLAGS="-e LIBGL_ALWAYS_SOFTWARE=1"
+fi
+
+#docker run -it --rm --name $CONTAINER_NAME \
+#    -e DISPLAY=$DISPLAY \
+#    -e HEADLESS=$HEADLESS \
+#    -e DEVELOPMENT=$DEVELOPMENT \
+#    -v /tmp/.X11-unix:/tmp/.X11-unix \
+#    -v "$PWD/src":/app/src \
+#    -v "$PWD/tests":/app/tests \
+#    --device /dev/dri:/dev/dri \
+#    -v $HOME/.gazebo/worlds:/root/.gazebo/worlds \
+#    --network host \
+#    $CONTAINER_NAME
+
+docker run -it --rm \
+  --name $CONTAINER_NAME \
+  -e DISPLAY=$DISPLAY \
+  -e XDG_RUNTIME_DIR=/tmp/runtime-root \
+  -e LIBGL_ALWAYS_INDIRECT=0 \
+  -e QT_X11_NO_MITSHM=1 \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  -v "$PWD/src":/app/src \
+  -v "$PWD/tests":/app/tests \
+  -v "$PWD/.gazebo":/app/.gazebo \
+  -v "$HOME/.gazebo/models":/root/.gazebo/models \
+  -v "$HOME/.gazebo/worlds":/root/.gazebo/worlds \
+  --device /dev/dri:/dev/dri \
+  --group-add video \
+  --network host \
+  $CONTAINER_NAME
+
 
 # Disable X11 forwarding
 xhost -

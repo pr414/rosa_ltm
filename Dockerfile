@@ -6,16 +6,49 @@ ENV HEADLESS=false
 ARG DEVELOPMENT=false
 
 # Install linux packages
+#RUN apt-get update && apt-get install -y \
+#    ros-$(rosversion -d)-turtlesim \
+#    locales \
+#    xvfb \
+#    python3.9 \
+#    python3-pip \
+#    python3.9-venv \
+#    cargo \
+#    rustc \
+#    python3-empy \
+#    mesa-utils \
+#    libgl1-mesa-dri \
+#    libgl1-mesa-glx \
+#    && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && apt-get install -y \
     ros-$(rosversion -d)-turtlesim \
+    ros-$(rosversion -d)-gazebo-ros \
+    ros-$(rosversion -d)-gazebo-ros-pkgs \
+    ros-$(rosversion -d)-gazebo-ros-control \
+    ros-$(rosversion -d)-turtlebot3-gazebo \
+    ros-$(rosversion -d)-turtlebot3-teleop \
+    ros-$(rosversion -d)-turtlebot3-description \
+    # ros-$(rosversion -d)-ros-gz
     locales \
+    mesa-utils \
+    mesa-utils-extra \
+    libgl1-mesa-dri \
+    libgl1-mesa-glx \
+    libglu1-mesa \
+    libglx-mesa0 \
     xvfb \
     python3.9 \
     python3-pip \
     python3.9-venv \
     cargo \
     rustc \
-    python3-empy
+    python3-empy \
+    python3-defusedxml \
+    tmux \
+    git \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create virtualenv -> CREATED TO SOLVE CONFLICTS WITH NATIVE APT-GET PYTHON PACKAGES
 RUN python3.9 -m venv /opt/venv \
@@ -74,3 +107,53 @@ CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && \
 
 # pip install empy
 # pip install rospkg
+# pip install defusedxml
+
+# roslaunch gazebo_ros empty_world.launch world_name:="$HOME/.gazebo/worlds/small_house/small_house.world" &
+# roslaunch gazebo_ros empty_world.launch world_name:=/app/.gazebo/worlds/small_house/small_house.world
+# export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/app/.gazebo/models
+# export GAZEBO_RESOURCE_PATH=$GAZEBO_RESOURCE_PATH:/app/.gazebo/worlds
+# export GAZEBO_TEXTURE_PATH=/app/.gazebo/models:/root/.gazebo/models
+
+
+## LINK root/.gazebo to app/.gazebo
+# mkdir -p /root/.gazebo
+# ln -s /app/.gazebo/models /root/.gazebo/models
+# ln -s /app/.gazebo/worlds /root/.gazebo/worlds
+
+########## WORKING ##############################################################
+# mkdir -p catkin_ws/src
+# cd catkin_ws/src
+# git clone https://github.com/aws-robotics/aws-robomaker-small-house-world.git
+# cd /app/catkin_ws
+# source /opt/ros/noetic/setup.bash
+# catkin_make
+# source devel/setup.bash
+# source /app/catkin_ws/devel/setup.bash
+# roslaunch aws_robomaker_small_house_world view_small_house.launch
+### IF WE WANT TO DIRECTLY USE GAZEBO, WE NEED TO EXPORT GAZEBO PATHS AS ABOVE
+
+## LAUNCHING TURTLEBOT3 IN GAZEBO MAP
+# export TURTLEBOT3_MODEL=waffle
+# roslaunch my_robot_launch turtlebot3_small_house.launch
+
+### CONTROLLING BOT WITH TELEOP
+# IF NOT DETECTED: apt-get install -y ros-noetic-turtlebot3-teleop
+## THEN
+# rosrun turtlebot3_teleop turtlebot3_teleop_key
+
+## CHECK CAMERA FEED FROM ROBOT
+# source /opt/ros/noetic/setup.bash
+# source /app/catkin_ws/devel/setup.bash
+# rqt_image_view
+
+###### RECORD RAW DATA TO BE PUT IN THE DB
+# rosbag record -O dataset.bag /camera/rgb/image_raw /odom /clock
+
+###############################################################################
+
+
+# General Understanding Notes:
+# The catkin_make command creates packages for every folder inside the src directory in the scope it is invoked.
+# There is a REDUNDANCY, because we both install rosa with python_3.9 and also haved the files inside /rosa/
+# We can technically define our own turtle_agent node and provide the tools to be specific to the turtlebot3_waffle functionalities, to be ran in Gazebo.
