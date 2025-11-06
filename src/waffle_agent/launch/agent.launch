@@ -1,0 +1,12 @@
+<launch>
+    <arg name="streaming" default="false" />
+    <node name="rosa_waffle_agent"
+          pkg="waffle_agent"
+          type="waffle_agent.py"
+          respawn="false"
+          respawn_delay="10"
+          cwd="node"
+          output="screen" >
+        <param name="streaming" value="$(arg streaming)" />
+    </node>
+</launch>

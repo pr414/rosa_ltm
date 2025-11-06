@@ -16,7 +16,7 @@
   -->
 
 <package format="2">
-    <name>turtle_agent</name>
+    <name>classic_turtle_agent</name>
     <version>0.0.1</version>
     <description>Embodied ROSA agent for the TurtleSim robot.</description>
 
