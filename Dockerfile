@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     ros-$(rosversion -d)-turtlebot3-gazebo \
     ros-$(rosversion -d)-turtlebot3-teleop \
     ros-$(rosversion -d)-turtlebot3-description \
+    # ros-$(rosversion -d)-cv-bridge \
     # ros-$(rosversion -d)-ros-gz
     locales \
     mesa-utils \
@@ -49,7 +50,7 @@ RUN apt-get update && apt-get install -y \
     git \
     nano \
     #python3-catkin-tools \
-    #python3-opencv \
+    python3-opencv \
     && rm -rf /var/lib/apt/lists/*
 
 # Create virtualenv -> CREATED TO SOLVE CONFLICTS WITH NATIVE APT-GET PYTHON PACKAGES

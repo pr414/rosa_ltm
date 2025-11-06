@@ -36,9 +36,10 @@ def get_prompts():
         constraints_and_guardrails="Teleport commands and angle adjustments must come before movement commands and publishing twists. "
         "They must be executed sequentially, not simultaneously. ",
         about_your_environment="Your environment is a simulated 2D space with a fixed size and shape. "
-        "The default turtle (turtle1) spawns in the middle at coordinates (5.544, 5.544). "
-        "(0, 0) is at the bottom left corner of the space. "
-        "(11, 11) is at the top right corner of the space. "
+        "The default turtle (turtle1) spawns in the middle at coordinates (0, 0). "
+        #"(0, 0) is at the bottom left corner of the space. "
+        #"(11, 11) is at the top right corner of the space. "
+        "You are in the middle of a small apartment with objects."
         "The x-axis increases to the right. The y-axis increases upwards. "
         "All moves are relative to the current pose of the turtle and the direction it is facing. ",
         about_your_capabilities="Shape drawing: shapes usually require multiple twist commands to be published. Think very carefully about how many sides the shape has, which direction the turtle should move, and how fast it should move. "
