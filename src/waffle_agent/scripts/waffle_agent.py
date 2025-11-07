@@ -109,7 +109,7 @@ class TurtleAgent(ROSA):
     @property
     def greeting(self):
         greeting = Text(
-            "\nHi! I'm the WAFFLE AGENT 🐢🤖. How can I help you today?\n"
+            "\nWAFFLE AGENT AWAITING COMMAND:\n"
         )
         greeting.stylize("frame bold blue")
         greeting.append(
