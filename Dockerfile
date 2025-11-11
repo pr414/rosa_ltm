@@ -47,6 +47,7 @@ RUN apt-get update && apt-get install -y \
     tmux \
     git \
     nano \
+    docker \
     && rm -rf /var/lib/apt/lists/*
 
 # Create virtualenv -> CREATED TO SOLVE CONFLICTS WITH NATIVE APT-GET PYTHON PACKAGES
@@ -153,6 +154,16 @@ CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && \
 ###### RECORD RAW DATA TO BE PUT IN THE DB
 # rosbag record -O dataset.bag /camera/rgb/image_raw /odom /clock
 
+#### CONVERT BAG TO VIDEO
+# pip install pycryptodomex
+# python3 -m pip install python-gnupg
+# python3 -m pip install opencv-python-headless
+# pip install "numpy<2" --force-reinstall
+# SET 1920X1080
+
+# OR CAN DO:
+# import rosbag
+# rosbag.ENABLE_ENCRYPTION = False
 ###############################################################################
 
 
