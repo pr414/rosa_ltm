@@ -1,0 +1,16 @@
+## We're facing issues because VILA and Remembr use different dependencies w.r.t. ROSA (They run in Python 3.10)
+
+python3.9 -m pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp39-cp39-linux_x86_64.whl
+
+cd deps/VILA
+python3.9 -m pip install -e .
+python3.9 -m pip install -e ".[train]"
+python3.9 -m pip install -e ".[eval]"
+
+cd /app/remembr
+
+## IF NEEDED
+python3.9 -m pip install --upgrade jpl-rosa
+python3.9 -m pip install --upgrade ollama
+python3.9 -m pip install --upgrade deepspeed
+

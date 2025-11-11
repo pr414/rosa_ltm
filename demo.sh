@@ -102,6 +102,7 @@ docker run -it --rm \
   -e XDG_RUNTIME_DIR=/tmp/runtime-root \
   -e LIBGL_ALWAYS_INDIRECT=0 \
   -e QT_X11_NO_MITSHM=1 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   -v "$PWD/src":/app/src \
   -v "$PWD/tests":/app/tests \
