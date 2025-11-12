@@ -31,9 +31,9 @@ case "$(uname)" in
         echo "Enabling X11 forwarding..."
         # If running under WSL, use :0 for DISPLAY
         if grep -q "WSL" /proc/version; then
-            export DISPLAY=:0
+            export DISPLAY=:1
         else
-            export DISPLAY=:0
+            export DISPLAY=:1
         fi
         xhost +
         ;;
