@@ -119,3 +119,8 @@ docker run -it --rm \
 xhost -
 
 exit 0
+
+# WE COULD TECHNICALLY CREATE A DOCKER NETWORK AND NOT HAVE TO USE --NETWORK HOST, BUT THIS IS SIMPLER FOR NOW
+# STEPS WOULD BE:
+# docker network create remembr-net
+# docker network connect remembr-net <container-name>
