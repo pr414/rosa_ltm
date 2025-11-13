@@ -43,14 +43,14 @@ RUN apt-get update && apt-get install -y \
 # ------------------------------------------------------------
 # #####CHECK##### Install ROS2 Foxy alongside ROS1 Noetic
 # ------------------------------------------------------------
-RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
-    apt-get update && apt-get install -y \
-    ros-foxy-desktop \
-    ros-foxy-rosbag2 \
-    ros-foxy-rosbag2-storage-default-plugins \
-    python3-colcon-common-extensions \
- && rm -rf /var/lib/apt/lists/*
+#RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+#    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
+#    apt-get update && apt-get install -y \
+#    ros-foxy-desktop \
+#    ros-foxy-rosbag2 \
+#    ros-foxy-rosbag2-storage-default-plugins \
+#    python3-colcon-common-extensions \
+# && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------
 # #####CHECK##### Install ROS2 Humble alongside ROS1 Noetic
@@ -103,9 +103,6 @@ RUN python3.10 -m venv /opt/venv/remembr && \
 # Copy and install REMEMBR (assuming its source is in /app/remembr)
 WORKDIR /app/remembr
 
-# Install REMEMBR dependencies
-RUN /opt/venv/remembr/bin/pip install -r requirements.txt
-
 # Install VILA
 RUN /opt/venv/remembr/bin/pip install -e . && \
     mkdir -p deps && cd deps && \
@@ -116,6 +113,15 @@ RUN /opt/venv/remembr/bin/pip install -e . && \
     /opt/venv/remembr/bin/pip install -e ".[train]" && \
     /opt/venv/remembr/bin/pip install -e ".[eval]" && \
     /opt/venv/remembr/bin/pip install -U transformers==4.46.0
+
+# Install OLLama for Remembr Testing # NOT NEEDED IF GPT4 BEING USED
+WORKDIR /app/remembr
+RUN apt-get update && apt-get install -y pciutils lshw
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Install REMEMBR dependencies
+WORKDIR /app/remembr
+RUN /opt/venv/remembr/bin/pip install -r requirements.txt
 
 # Patch DeepSpeed as from Remembr instructions (still valid for current VILA)
 #RUN site_pkg_path=$(/opt/venv/remembr/bin/python -c 'import site; print(site.getsitepackages()[0])') && \
@@ -144,6 +150,8 @@ CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && \
 
 
 
+### TO MAKE MILVIUS BASIC TEST WORK, RUN:
+# pip install "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0"
 
 # TO CHECK: DEPENDENCIES ORDER:
 #      Attempting uninstall: gradio
@@ -156,3 +164,7 @@ CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && \
 #vila 2.0.0 requires gradio_client==0.2.9, but you have gradio-client 0.6.1 which is incompatible.
 #vila 2.0.0 requires openai==1.8.0, but you have openai 1.109.1 which is incompatible.
 #Successfully installed SQLAlchemy-2.0.44 accelerate-0.33.0 aiofiles-23.2.1 altair-5.5.0 async-timeout-4.0.3 dataclasses-json-0.6.7 gradio-3.50.2 gradio-client-0.6.1 greenlet-3.2.4 grpcio-1.76.0 importlib-resources-6.5.2 jiter-0.12.0 jsonpatch-1.33 jsonpointer-3.0.0 langchain-0.2.17 langchain-community-0.2.19 langchain-core-0.2.43 langchain-text-splitters-0.2.4 langchain_huggingface-0.0.3 langchain_nvidia_ai_endpoints-0.2.2 langchain_openai-0.1.25 langgraph-0.4.0 langgraph-checkpoint-2.1.2 langgraph-prebuilt-0.1.8 langgraph-sdk-0.2.9 langsmith-0.1.147 markupsafe-2.1.5 marshmallow-3.26.1 mypy-extensions-1.1.0 openai-1.109.1 ormsgpack-1.12.0 packaging-24.2 pillow-10.4.0 pydantic-1.10.18 pymilvus-2.6.3 python-dotenv-1.2.1 requests-toolbelt-1.0.0 sentence-transformers-
+
+### TO TEST WITH OLLAMA (IF INSTALLED), RUN
+# ollama serve
+# ollama pull phi3:mini

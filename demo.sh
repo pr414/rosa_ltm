@@ -54,7 +54,7 @@ if ! xset q &>/dev/null; then
 fi
 
 # Build and run the Docker container
-CONTAINER_NAME="rosa-turtlesim-demo"
+CONTAINER_NAME="rosa-ltm-test"
 echo "Building the $CONTAINER_NAME Docker image..."
 docker build --build-arg DEVELOPMENT=$DEVELOPMENT -t $CONTAINER_NAME -f Dockerfile . || { echo "Error: Docker build failed"; exit 1; }
 
@@ -91,12 +91,13 @@ fi
 #    -v /tmp/.X11-unix:/tmp/.X11-unix \
 #    -v "$PWD/src":/app/src \
 #    -v "$PWD/tests":/app/tests \
-#    --device /dev/dri:/dev/dri \
+#    --device /dev/dri:/dev/dri \ <----- add this if AMD GPU !!!
 #    -v $HOME/.gazebo/worlds:/root/.gazebo/worlds \
 #    --network host \
 #    $CONTAINER_NAME
 
 docker run -it --rm \
+  --gpus all \
   --name $CONTAINER_NAME \
   -e DISPLAY=$DISPLAY \
   -e XDG_RUNTIME_DIR=/tmp/runtime-root \
@@ -109,7 +110,6 @@ docker run -it --rm \
   -v "$PWD/.gazebo":/app/.gazebo \
   -v "$HOME/.gazebo/models":/root/.gazebo/models \
   -v "$HOME/.gazebo/worlds":/root/.gazebo/worlds \
-  --device /dev/dri:/dev/dri \
   --group-add video \
   --network host \
   $CONTAINER_NAME
