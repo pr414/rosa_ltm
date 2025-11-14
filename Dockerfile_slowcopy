@@ -83,6 +83,16 @@ RUN rosdep update && \
     echo "alias start='catkin build && source devel/setup.bash && roslaunch waffle_agent agent.launch'" >> /root/.bashrc && \
     echo "export ROSLAUNCH_SSH_UNKNOWN=1" >> /root/.bashrc
 
+# Copy ROSA code and install it
+COPY . /app/
+WORKDIR /app/
+
+RUN /bin/bash -c 'if [ "$DEVELOPMENT" = "true" ]; then \
+        /opt/venv/rosa/bin/pip install --user -e .; \
+    else \
+        /opt/venv/rosa/bin/pip install -U jpl-rosa>=1.0.7; \
+    fi'
+
 # ============================================================
 #  REMEMBR + VILA virtual environment (Python 3.10)
 # ============================================================
@@ -109,19 +119,9 @@ RUN /opt/venv/remembr/bin/pip install -e . && \
 #RUN apt-get update && apt-get install -y pciutils lshw
 #RUN curl -fsSL https://ollama.com/install.sh | sh
 
-# Copy ROSA code and install it
-COPY . /app/
-WORKDIR /app/
-
-RUN /bin/bash -c 'if [ "$DEVELOPMENT" = "true" ]; then \
-        /opt/venv/rosa/bin/pip install --user -e .; \
-    else \
-        /opt/venv/rosa/bin/pip install -U jpl-rosa>=1.0.7; \
-    fi'
-
 # Install REMEMBR dependencies
 WORKDIR /app/remembr
-RUN /opt/venv/remembr/bin/pip install -r requirements.txt && /opt/venv/remembr/bin/pip install "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0"
+RUN /opt/venv/remembr/bin/pip install -r requirements.txt
 
 # Patch DeepSpeed as from Remembr instructions (still valid for current VILA)
 #RUN site_pkg_path=$(/opt/venv/remembr/bin/python -c 'import site; print(site.getsitepackages()[0])') && \

@@ -38,7 +38,7 @@ print("MEMORY BUILD SUCCESS.")
 
 agent = ReMEmbRAgent(llm_type='gpt-4')
 agent.set_memory(memory)
-response = agent.query("Take me to a fridge?")
+response = agent.query("Take me to a fridge")
 print(response.position)
 
 # uncomment if you want to see the text reason for the position data

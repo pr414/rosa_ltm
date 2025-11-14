@@ -35,9 +35,10 @@ from help import get_help
 from llm import get_llm
 from prompts import get_prompts
 
+# PYTHON DEBUGGING INFO
 import sys, os
-print(">>> Python executable:", sys.executable)
-print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PYTHONPATH:", os.environ.get("PYTHONPATH", ""))
+#print(">>> Python executable:", sys.executable)
+#print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PYTHONPATH:", os.environ.get("PYTHONPATH", ""))
 
 
 # Typical method for defining tools in ROSA

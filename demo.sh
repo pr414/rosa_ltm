@@ -110,6 +110,7 @@ docker run -it --rm \
   -v "$PWD/.gazebo":/app/.gazebo \
   -v "$HOME/.gazebo/models":/root/.gazebo/models \
   -v "$HOME/.gazebo/worlds":/root/.gazebo/worlds \
+  --device /dev/dri:/dev/dri \
   --group-add video \
   --network host \
   $CONTAINER_NAME
